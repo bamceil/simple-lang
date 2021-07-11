@@ -1,0 +1,10 @@
+
+function main() -> int {  // Main function
+    int m = 10;
+    if (m >= 10) {
+        m = 5;
+    } else {
+        m = 15;
+    }
+    return m;
+}

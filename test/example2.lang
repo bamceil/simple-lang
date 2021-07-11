@@ -1,0 +1,18 @@
+
+function fib(int x) -> int {
+    int a = 0, b = 1, c, i = 2;
+    if (x == 0) {
+        return 0;
+    }
+    while (i <= x) {
+        c = a + b;
+        a = b;
+        b = c;
+        i = i + 1;
+    }
+    return b;
+}
+
+function main() -> int {  // Main function
+    return fib(9);
+}

@@ -1,0 +1,13 @@
+function main() -> int {
+    int k = 10;
+    int m = 0;
+
+    while (m < k) {
+        m = m + 1;
+        if (m % 2 == 0) {
+            m = m * 3;
+            continue;
+        }
+    }
+    return m;
+}

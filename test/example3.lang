@@ -1,0 +1,15 @@
+function func(bool v) -> int {
+    int k = 50;
+    if (v) {
+        k = 100;
+    }
+    return k;
+}
+
+function kf(bool t) -> int {
+    return func(t);
+}
+
+function main() -> int {
+    return kf(false);
+}
