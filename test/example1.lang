@@ -6,5 +6,8 @@ function main() -> int {  // Main function
     } else {
         m = 15;
     }
-    return m;
+    
+    printi(m);
+
+    return 0;
 }

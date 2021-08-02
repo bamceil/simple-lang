@@ -1,0 +1,11 @@
+function main() -> bool {
+    bool t = true;
+
+    if (t) {
+        t = !t;
+    }
+
+    printi(t); // 1
+
+    return 0;
+}

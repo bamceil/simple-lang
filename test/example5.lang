@@ -9,5 +9,8 @@ function main() -> int {
             continue;
         }
     }
-    return m;
+    
+    printi(m);
+
+    return 0;
 }

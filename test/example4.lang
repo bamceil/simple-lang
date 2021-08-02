@@ -8,5 +8,7 @@ function main() -> int {
             break;
         }
     }
-    return m;
+    printi(m);
+
+    return 0;
 }

@@ -6,6 +6,7 @@
 
 namespace lang {
 using namespace std;
+using namespace llvm;
 
 enum class TypeEnum { DOUBLE, INTEGER, /*STRING,*/ BOOL };
 
@@ -13,7 +14,7 @@ class CodeGenContext;
 
 class Node {
 public:
-    virtual llvm::Value *code_gen(CodeGenContext &context) { return nullptr; }
+    virtual Value *code_gen(CodeGenContext &context) { return nullptr; }
     virtual ~Node() {}
 };
 
@@ -24,7 +25,7 @@ class Statement : public Node {};
 class Identifier : public Expression {
 public:
     Identifier(string *name) : name_(name) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     const string *name() const { return name_; }
 
@@ -35,7 +36,7 @@ private:
 class Arg : public Node {
 public:
     Arg(TypeEnum type, Identifier *ident) : type_(type), ident_(ident) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     TypeEnum type() const { return type_; }
     Identifier *ident() const { return ident_; }
@@ -48,7 +49,7 @@ private:
 class Args : public Node {
 public:
     Args() {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     void push(Arg *arg) { args_.push_back(arg); }
     const vector<Arg *> &args() const { return args_; }
@@ -60,7 +61,7 @@ private:
 class ReturnType : public Node {
 public:
     ReturnType(TypeEnum type) : type_(type) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     TypeEnum type() const { return type_; }
 
@@ -71,7 +72,7 @@ private:
 class Stmts : public Node {
 public:
     Stmts() {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     void push(Statement *stmt) { stmts_.push_back(stmt); }
     const vector<Statement *> &stmts() const { return stmts_; }
@@ -85,7 +86,7 @@ public:
     InitDecl(Identifier *ident) : ident_(ident) {}
     InitDecl(Identifier *ident, Expression *expr)
         : ident_(ident), expr_(expr) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     Identifier *ident() const { return ident_; }
     Expression *expr() const { return expr_; }
@@ -98,7 +99,7 @@ private:
 class InitDecls : public Statement {
 public:
     InitDecls() {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     void push(InitDecl *init) { inits_.push_back(init); }
     const vector<InitDecl *> &inits() const { return inits_; }
@@ -110,7 +111,7 @@ private:
 class VarDecl : public Statement {
 public:
     VarDecl(TypeEnum type, InitDecls *inits) : type_(type), inits_(inits) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     TypeEnum type() const { return type_; }
     InitDecls *inits() const { return inits_; }
@@ -123,7 +124,7 @@ private:
 class VarDecls : public Statement {
 public:
     VarDecls() {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     void push(VarDecl *var) { vars_.push_back(var); }
     const vector<VarDecl *> &vars() const { return vars_; }
@@ -137,7 +138,7 @@ public:
     CompoundStmts(VarDecls *vars, Stmts *stmts) : vars_(vars), stmts_(stmts) {}
     CompoundStmts(VarDecls *vars) : vars_(vars) {}
     CompoundStmts(Stmts *stmts) : stmts_(stmts) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     VarDecls *vars() const { return vars_; }
     Stmts *stmts() const { return stmts_; }
@@ -151,7 +152,7 @@ class Func : public Node {
 public:
     Func(Identifier *ident, Args *args, ReturnType *ret, CompoundStmts *cs)
         : ident_(ident), args_(args), ret_(ret), cs_(cs) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     Identifier *ident() const { return ident_; }
     Args *args() const { return args_; }
@@ -168,7 +169,7 @@ private:
 class PActuals : public Expression {
 public:
     PActuals() {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     void push(Expression *expr) { exprs_.push_back(expr); }
     const vector<Expression *> exprs() const { return exprs_; }
@@ -180,7 +181,7 @@ private:
 class Actuals : public Expression {
 public:
     Actuals(PActuals *act) : args_(act) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     PActuals *args() const { return args_; }
 
@@ -191,7 +192,7 @@ private:
 class CallExpr : public Expression {
 public:
     CallExpr(Identifier *ident, Actuals *args) : ident_(ident), args_(args) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     Identifier *ident() const { return ident_; }
     Actuals *args() const { return args_; }
@@ -205,7 +206,7 @@ class AssignStmt : public Statement {
 public:
     AssignStmt(Identifier *ident, Expression *expr)
         : ident_(ident), expr_(expr) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     Identifier *ident() const { return ident_; }
     Expression *expr() const { return expr_; }
@@ -218,7 +219,7 @@ private:
 class CallStmt : public Statement {
 public:
     CallStmt(CallExpr *func) : func_(func) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     CallExpr *func() const { return func_; }
 
@@ -229,7 +230,7 @@ private:
 class ReturnStmt : public Statement {
 public:
     ReturnStmt(Expression *expr) : expr_(expr) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     Expression *expr() const { return expr_; }
 
@@ -239,12 +240,12 @@ private:
 
 class BreakStmt : public Statement {
 public:
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 };
 
 class ContinueStmt : public Statement {
 public:
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 };
 
 class IfStmt : public Statement {
@@ -253,7 +254,7 @@ public:
         : test_expr_(test_expr), if_stmts_(if_stmts) {}
     IfStmt(Expression *test_expr, Stmts *if_stmts, Stmts *else_stmts)
         : test_expr_(test_expr), if_stmts_(if_stmts), else_stmts_(else_stmts) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     Expression *test_expr() const { return test_expr_; }
     Stmts *if_stmts() const { return if_stmts_; }
@@ -269,7 +270,7 @@ class WhileStmt : public Statement {
 public:
     WhileStmt(Expression *test_expr, Stmts *stmts)
         : test_expr_(test_expr), stmts_(stmts) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     Expression *test_expr() const { return test_expr_; }
     Stmts *stmts() const { return stmts_; }
@@ -281,18 +282,18 @@ private:
 
 class TrueExpr : public Expression {
 public:
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 };
 
 class FalseExpr : public Expression {
 public:
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 };
 
 // class StringExpr : public Expression {
 // public:
 //     StringExpr(string *value) : value_(value) {}
-//     virtual llvm::Value *code_gen(CodeGenContext &context);
+//     virtual Value *code_gen(CodeGenContext &context);
 
 //     const string *value() const { return value_; }
 
@@ -303,7 +304,7 @@ public:
 class DoubleExpr : public Expression {
 public:
     DoubleExpr(double value) : value_(value) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     double value() const { return value_; }
 
@@ -314,7 +315,7 @@ private:
 class IntegerExpr : public Expression {
 public:
     IntegerExpr(int64_t value) : value_(value) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     int64_t value() const { return value_; }
 
@@ -325,7 +326,7 @@ private:
 class NotExpr : public Expression {
 public:
     NotExpr(Expression *expr) : expr_(expr) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     Expression *expr() const { return expr_; }
 
@@ -336,7 +337,7 @@ private:
 class NegExpr : public Expression {
 public:
     NegExpr(Expression *expr) : expr_(expr) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     Expression *expr() const { return expr_; }
 
@@ -364,7 +365,7 @@ class OpExpr : public Expression {
 public:
     OpExpr(Expression *left, OP op, Expression *right)
         : left_(left), op_(op), right_(right) {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     OP op() const { return op_; }
     Expression *left() const { return left_; }
@@ -379,7 +380,7 @@ private:
 class Program : public Node {
 public:
     Program() {}
-    virtual llvm::Value *code_gen(CodeGenContext &context);
+    virtual Value *code_gen(CodeGenContext &context);
 
     void push(Func *func) { funcs_.push_back(func); }
     const vector<Func *> &func() const { return funcs_; }

@@ -1,6 +1,5 @@
-#line 2 "flex_lang.cpp"
 
-#line 4 "flex_lang.cpp"
+#line 3 "lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -506,14 +505,14 @@ int cur_line = 1;
 void yyerror(const char *msg);
 void unrecognized_char(char c);
 void unterminate_string();
-#line 510 "flex_lang.cpp"
+#line 509 "lex.yy.c"
 /* note: \042 is '"' */
 /*UNTERM_STRING       (\042[^\042\n]*)*/
 /*STRING              (\042[^\042\n]*\042)*/
 /*{STRING}            { yylval.string = new std::string(yytext); return StringConstant;  }*/
 /*{UNTERM_STRING}     {  unterminate_string();   }*/
 /* "string"            { return String;          } */
-#line 517 "flex_lang.cpp"
+#line 516 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -730,10 +729,10 @@ YY_DECL
 		}
 
 	{
-#line 26 "lang.l"
+#line 27 "lang.l"
 
 
-#line 737 "flex_lang.cpp"
+#line 736 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -793,145 +792,145 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 28 "lang.l"
+#line 29 "lang.l"
 { cur_line++;           }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 29 "lang.l"
+#line 30 "lang.l"
 { /* ignore all spaces */   }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 30 "lang.l"
+#line 31 "lang.l"
 { /* return Comment; */         }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 33 "lang.l"
+#line 34 "lang.l"
 { return yytext[0];         }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 35 "lang.l"
+#line 36 "lang.l"
 { return LE;              }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 36 "lang.l"
+#line 37 "lang.l"
 { return GE;              }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 37 "lang.l"
+#line 38 "lang.l"
 { return EQ;              }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 38 "lang.l"
+#line 39 "lang.l"
 { return NE;              }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 39 "lang.l"
+#line 40 "lang.l"
 { return And;             }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 40 "lang.l"
+#line 41 "lang.l"
 { return Or;              }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 41 "lang.l"
+#line 42 "lang.l"
 { return Arrow;           }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 43 "lang.l"
+#line 44 "lang.l"
 { return Int;             }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 44 "lang.l"
+#line 45 "lang.l"
 { return Double;          }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 45 "lang.l"
+#line 46 "lang.l"
 { return Bool;            }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 47 "lang.l"
+#line 48 "lang.l"
 { return True;            }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 48 "lang.l"
+#line 49 "lang.l"
 { return False;           }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 49 "lang.l"
+#line 50 "lang.l"
 { return Function;        }    
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 50 "lang.l"
+#line 51 "lang.l"
 { return While;           }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 51 "lang.l"
+#line 52 "lang.l"
 { return If;              }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 52 "lang.l"
+#line 53 "lang.l"
 { return Else;            }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 53 "lang.l"
+#line 54 "lang.l"
 { return Return;          }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 54 "lang.l"
+#line 55 "lang.l"
 { return Break;           }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 55 "lang.l"
+#line 56 "lang.l"
 { return Continue;        }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 58 "lang.l"
+#line 59 "lang.l"
 { yylval.number = atoll(yytext); return IntConstant;     }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 59 "lang.l"
+#line 60 "lang.l"
 { yylval.string = new std::string(yytext); return IdentifierT;      }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 60 "lang.l"
+#line 61 "lang.l"
 { yylval.real = atof(yytext); return DoubleConstant;  }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 62 "lang.l"
+#line 63 "lang.l"
 {  unrecognized_char(yytext[0]);   }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 64 "lang.l"
+#line 65 "lang.l"
 ECHO;
 	YY_BREAK
-#line 935 "flex_lang.cpp"
+#line 934 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1936,7 +1935,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 64 "lang.l"
+#line 65 "lang.l"
 
 
 void unrecognized_char(char c) {

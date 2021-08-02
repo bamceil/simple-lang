@@ -67,4 +67,6 @@ private:
     vector<BasicBlock *> break_list_;
     vector<BasicBlock *> continue_list_;
 };
+
+void builtin_function(CodeGenContext &context);
 } // namespace lang

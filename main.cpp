@@ -25,6 +25,7 @@ int main(int argc, char **argv) {
     InitializeNativeTargetAsmParser();
 
     CodeGenContext context;
+    builtin_function(context);
 
     context.generate_code(*prog, argv[2]);
     return 0;

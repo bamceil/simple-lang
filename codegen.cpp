@@ -24,9 +24,8 @@ void CodeGenContext::generate_code(Program &root, const std::string &file) {
     pm.run(*module_);
 
     error_code err_info;
-    llvm::raw_ostream *out =
-        new llvm::raw_fd_ostream(file, err_info, sys::fs::F_None);
-    llvm::WriteBitcodeToFile(*module_, *out);
+    raw_ostream *out = new raw_fd_ostream(file, err_info, sys::fs::F_None);
+    WriteBitcodeToFile(*module_, *out);
     out->flush();
     delete out;
 }
@@ -66,7 +65,7 @@ static Type *value_type(TypeEnum type) {
     return nullptr;
 }
 
-llvm::Value *Program::code_gen(CodeGenContext &context) {
+Value *Program::code_gen(CodeGenContext &context) {
     std::clog << "Creating program.\n";
 
     for (auto func : funcs_)
@@ -74,7 +73,7 @@ llvm::Value *Program::code_gen(CodeGenContext &context) {
     return nullptr;
 }
 
-llvm::Value *Identifier::code_gen(CodeGenContext &context) {
+Value *Identifier::code_gen(CodeGenContext &context) {
     std::clog << "Creating identifier: " << name_->c_str() << "\n";
 
     Value *it = context.find_symbol(*name_);
@@ -86,7 +85,7 @@ llvm::Value *Identifier::code_gen(CodeGenContext &context) {
     return Builder.CreateLoad(it, name_->c_str());
 }
 
-llvm::Value *Arg::code_gen(CodeGenContext &context) {
+Value *Arg::code_gen(CodeGenContext &context) {
     clog << "Creating arg.\n";
 
     Value *alloc =
@@ -95,17 +94,17 @@ llvm::Value *Arg::code_gen(CodeGenContext &context) {
     return alloc;
 }
 
-llvm::Value *Args::code_gen(CodeGenContext &context) { return nullptr; }
+Value *Args::code_gen(CodeGenContext &context) { return nullptr; }
 
-llvm::Value *ReturnType::code_gen(CodeGenContext &context) { return nullptr; }
+Value *ReturnType::code_gen(CodeGenContext &context) { return nullptr; }
 
-llvm::Value *Stmts::code_gen(CodeGenContext &context) { return nullptr; }
+Value *Stmts::code_gen(CodeGenContext &context) { return nullptr; }
 
-llvm::Value *InitDecl::code_gen(CodeGenContext &context) { return nullptr; }
+Value *InitDecl::code_gen(CodeGenContext &context) { return nullptr; }
 
-llvm::Value *InitDecls::code_gen(CodeGenContext &context) { return nullptr; }
+Value *InitDecls::code_gen(CodeGenContext &context) { return nullptr; }
 
-llvm::Value *VarDecl::code_gen(CodeGenContext &context) {
+Value *VarDecl::code_gen(CodeGenContext &context) {
     clog << "Creating var declare.\n";
 
     Type *type = value_type(type_);
@@ -126,9 +125,9 @@ llvm::Value *VarDecl::code_gen(CodeGenContext &context) {
     return nullptr;
 }
 
-llvm::Value *VarDecls::code_gen(CodeGenContext &context) { return nullptr; }
+Value *VarDecls::code_gen(CodeGenContext &context) { return nullptr; }
 
-llvm::Value *Func::code_gen(CodeGenContext &context) {
+Value *Func::code_gen(CodeGenContext &context) {
     clog << "Creating function: " << ident_->name()->c_str() << "\n";
 
     if (context.locals().find(*(ident_->name())) != context.locals().end()) {
@@ -170,11 +169,13 @@ llvm::Value *Func::code_gen(CodeGenContext &context) {
 
     context.pop_block();
 
+    if (funcType->getReturnType()->isVoidTy()) { Builder.CreateRetVoid(); }
+
     context.locals()[*(ident_->name())] = func;
     return func;
 }
 
-llvm::Value *CompoundStmts::code_gen(CodeGenContext &context) {
+Value *CompoundStmts::code_gen(CodeGenContext &context) {
     clog << "Creating compound statements.\n";
     if (vars_ != nullptr) {
         for (auto var : vars_->vars())
@@ -187,11 +188,11 @@ llvm::Value *CompoundStmts::code_gen(CodeGenContext &context) {
     return nullptr;
 }
 
-llvm::Value *PActuals::code_gen(CodeGenContext &context) { return nullptr; }
+Value *PActuals::code_gen(CodeGenContext &context) { return nullptr; }
 
-llvm::Value *Actuals::code_gen(CodeGenContext &context) { return nullptr; }
+Value *Actuals::code_gen(CodeGenContext &context) { return nullptr; }
 
-llvm::Value *CallExpr::code_gen(CodeGenContext &context) {
+Value *CallExpr::code_gen(CodeGenContext &context) {
     clog << "Creating function call: " << *(ident_->name()) << "\n";
 
     Function *function = context.module_->getFunction(*(ident_->name()));
@@ -206,7 +207,7 @@ llvm::Value *CallExpr::code_gen(CodeGenContext &context) {
                  << " expected: " << function->arg_size() << "\n";
             return nullptr;
         }
-        return Builder.CreateCall(function, args, "calltmp");
+        return Builder.CreateCall(function, args, "");
     }
 
     if (function->arg_size() != args_->args()->exprs().size()) {
@@ -219,10 +220,10 @@ llvm::Value *CallExpr::code_gen(CodeGenContext &context) {
         args.push_back(expr->code_gen(context));
     }
 
-    return Builder.CreateCall(function, args, "calltmp");
+    return Builder.CreateCall(function, args, "");
 }
 
-llvm::Value *AssignStmt::code_gen(CodeGenContext &context) {
+Value *AssignStmt::code_gen(CodeGenContext &context) {
     const string &name = *(ident_->name());
     clog << "Creating assignment for: " << name << "\n";
 
@@ -240,12 +241,12 @@ llvm::Value *AssignStmt::code_gen(CodeGenContext &context) {
     return Builder.CreateStore(v, vit);
 }
 
-llvm::Value *CallStmt::code_gen(CodeGenContext &context) {
+Value *CallStmt::code_gen(CodeGenContext &context) {
     clog << "Creating call stmt.\n";
     return func_->code_gen(context);
 }
 
-llvm::Value *ReturnStmt::code_gen(CodeGenContext &context) {
+Value *ReturnStmt::code_gen(CodeGenContext &context) {
     clog << "Creating return\n";
 
     Value *v = expr_ == nullptr ? nullptr : expr_->code_gen(context);
@@ -254,7 +255,7 @@ llvm::Value *ReturnStmt::code_gen(CodeGenContext &context) {
     return Builder.CreateRet(v);
 }
 
-llvm::Value *BreakStmt::code_gen(CodeGenContext &context) {
+Value *BreakStmt::code_gen(CodeGenContext &context) {
     clog << "Creating break.\n";
 
     if (context.break_list().empty()) {
@@ -265,7 +266,7 @@ llvm::Value *BreakStmt::code_gen(CodeGenContext &context) {
     return Builder.CreateBr(context.break_list().back());
 }
 
-llvm::Value *ContinueStmt::code_gen(CodeGenContext &context) {
+Value *ContinueStmt::code_gen(CodeGenContext &context) {
     clog << "Creating continue.\n";
 
     if (context.continue_list().empty()) {
@@ -290,7 +291,7 @@ static Value *cast_to_boolean(Value *condValue) {
     }
 }
 
-llvm::Value *IfStmt::code_gen(CodeGenContext &context) {
+Value *IfStmt::code_gen(CodeGenContext &context) {
     clog << "Creating if-then-[else] code.\n";
 
     Value *condV = test_expr_->code_gen(context);
@@ -339,7 +340,7 @@ llvm::Value *IfStmt::code_gen(CodeGenContext &context) {
     return nullptr;
 }
 
-llvm::Value *WhileStmt::code_gen(CodeGenContext &context) {
+Value *WhileStmt::code_gen(CodeGenContext &context) {
     clog << "Creating while code.\n";
 
     Function *func = Builder.GetInsertBlock()->getParent();
@@ -384,38 +385,38 @@ llvm::Value *WhileStmt::code_gen(CodeGenContext &context) {
     return nullptr;
 }
 
-llvm::Value *TrueExpr::code_gen(CodeGenContext &context) {
+Value *TrueExpr::code_gen(CodeGenContext &context) {
     clog << "Creating true\n";
 
     return ConstantInt::get(langContext, APInt(1, 1));
 }
 
-llvm::Value *FalseExpr::code_gen(CodeGenContext &context) {
+Value *FalseExpr::code_gen(CodeGenContext &context) {
     clog << "Creating false.\n";
 
     return ConstantInt::get(langContext, APInt(1, 0));
 }
-// llvm::Value *StringExpr::code_gen(CodeGenContext &context) { return nullptr;
+// Value *StringExpr::code_gen(CodeGenContext &context) { return nullptr;
 // }
-llvm::Value *DoubleExpr::code_gen(CodeGenContext &context) {
+Value *DoubleExpr::code_gen(CodeGenContext &context) {
     clog << "Creating double: " << value_ << "\n";
 
     return ConstantFP::get(langContext, APFloat(value_));
 }
 
-llvm::Value *IntegerExpr::code_gen(CodeGenContext &context) {
+Value *IntegerExpr::code_gen(CodeGenContext &context) {
     clog << "Creating integer: " << value_ << "\n";
 
     return ConstantInt::get(langContext, APInt(64, value_, true));
 }
 
-// llvm::Value *StringExpr::code_gen(CodeGenContext &context) {
+// Value *StringExpr::code_gen(CodeGenContext &context) {
 //     clog << "Creating string: " << value_->c_str() << "\n";
 
 //     return Builder.CreateGlobalString(value_->c_str(), "global_string");
 // }
 
-llvm::Value *NotExpr::code_gen(CodeGenContext &context) {
+Value *NotExpr::code_gen(CodeGenContext &context) {
     clog << "Createing not code.\n";
 
     Value *v = expr_->code_gen(context);
@@ -426,7 +427,7 @@ llvm::Value *NotExpr::code_gen(CodeGenContext &context) {
     return Builder.CreateNot(v, "not");
 }
 
-llvm::Value *NegExpr::code_gen(CodeGenContext &context) {
+Value *NegExpr::code_gen(CodeGenContext &context) {
     clog << "Createing neg code.\n";
 
     Value *v = expr_->code_gen(context);
@@ -434,7 +435,7 @@ llvm::Value *NegExpr::code_gen(CodeGenContext &context) {
     return Builder.CreateNeg(v, "neg");
 }
 
-llvm::Value *OpExpr::code_gen(CodeGenContext &context) {
+Value *OpExpr::code_gen(CodeGenContext &context) {
     clog << "Creating operation expression.\n";
 
     Value *left = left_->code_gen(context);

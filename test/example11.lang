@@ -1,0 +1,17 @@
+function print_integer() {
+    int k = 100;
+    printi(k);
+}
+
+function print_double() {
+    double pi = 3.1415926;
+    printd(pi);
+}
+
+function main() -> int {
+    print_integer();
+
+    print_double();
+
+    return 0;
+}

@@ -11,5 +11,6 @@ function kf(bool t) -> int {
 }
 
 function main() -> int {
-    return kf(false);
+    printi (kf(false));
+    return 0;
 }

@@ -14,5 +14,7 @@ function fib(int x) -> int {
 }
 
 function main() -> int {  // Main function
-    return fib(9);
+    printi(fib(9));
+
+    return 0;
 }

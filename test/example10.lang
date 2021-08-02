@@ -1,0 +1,9 @@
+function main() -> int {
+    double t = 10.5;
+
+    double k = t + t;
+
+    printd(k);
+
+    return 0;
+}

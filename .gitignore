@@ -1,3 +1,9 @@
 bin
 ex1
 .vscode
+test/*.bc
+y.*
+lex.yy.c
+flex_lang.cpp
+bison_parser.cpp
+bison_parser.hpp

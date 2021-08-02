@@ -21,6 +21,7 @@ function main() -> int {
     if (!(m != 10)) {
         m = 7;
     }
-
-    return m; // 7
+    
+    printi(m); // 7
+    return 0; 
 }

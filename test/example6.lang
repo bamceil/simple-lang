@@ -7,5 +7,6 @@ function fib(int x) -> int {
 }
 
 function main() -> int {
-    return fib(9);
+    printi(fib(10));
+    return 0;
 }

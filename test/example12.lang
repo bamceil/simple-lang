@@ -1,0 +1,11 @@
+
+function f() {
+    int k = 10 + 7;
+    printi(k);
+}
+
+function main() -> int {
+    f();
+
+    return 0;
+}
